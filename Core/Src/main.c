@@ -23,6 +23,7 @@
 /* USER CODE BEGIN Includes */
 #include "stdio.h"
 #include <inttypes.h>
+#include <math.h>
 
 /* USER CODE END Includes */
 
@@ -71,7 +72,7 @@ static void MX_LPUART1_UART_Init(void);
 int __io_putchar(int ch)
 	{
 	HAL_UART_Transmit(&hlpuart1, (uint8_t *)&ch, 1, 10);
-	HAL_Delay(5);		// Slow Printing
+//	HAL_Delay(5);		// Slow Printing
 	return ch;
 	}
 /* USER CODE END 0 */
@@ -115,6 +116,16 @@ int main(void)
   HAL_DAC_Start(&hdac1,DAC_CHANNEL_2);
   HAL_ADCEx_Calibration_Start(&hadc1, ADC_SINGLE_ENDED);
   HAL_ADC_Start_DMA(&hadc1,(uint32_t*)&value_adc,1);
+
+// Create a uint16_t array to hold the sin wave, which has 380 uint16_t samples
+//  Approximately 100 kHz DAC output capability, and 262 Hz output frequency = 380 samples
+  uint16_t sin_wave[380];
+// Load the array with the sin wave values ranging from 0 to 4095 (12-bit)
+  for(int i=0; i<380; i++) {
+      sin_wave[i] = (uint16_t)(2047.5 + 2047.5 * sin(2 * 3.14159 * i / 380));
+      printf("t, v: %d, %" PRIu16 "\r\n", i, sin_wave[i]);
+    }
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
